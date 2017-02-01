@@ -1,7 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Optional } from "@angular/core";
 import { Http, Response } from "@angular/http";
 import { Observable } from "rxjs";
-import "rxjs/Rx";
+import "rxjs/add/operator/map";
 
 /**
  * provides auto-complete related utility functions
@@ -12,7 +12,7 @@ export class Ng2AutoComplete {
   public source: string;
   public pathToData: string;
 
-  constructor(private http: Http) {
+  constructor(@Optional() private http: Http) {
     // ...
   }
 
@@ -26,43 +26,29 @@ export class Ng2AutoComplete {
 
   /**
    * return remote data from the given source and options, and data path
-   * 
-   * @param {*} options is an object containing the query paramters for the GET call
-   * @returns {Observable<Response>}
-   * 
-   * @memberOf AutoComplete
    */
-  getRemoteData(options: any): Observable<Response> {
-
-    let keyValues: any[] = [];
-    let url = "";
-
-    for (var key in options) {
-      if (options.hasOwnProperty(key)) {
-        // replace all keyword to value
-        let regexp: RegExp = new RegExp(":" + key, "g");
-
-        url = this.source;
-        if (url.match(regexp)) {
-          url = url.replace(regexp, options[key]);
-        } else {
-          keyValues.push(key + "=" + options[key]);
-        }
-      }
+  getRemoteData(keyword: string): Observable<Response> {
+    if (typeof this.source !== 'string') {
+      throw "Invalid type of source, must be a string. e.g. http://www.google.com?q=:my_keyword";
+    } else if (!this.http) {
+      throw "Http is required.";
     }
 
-    if (keyValues.length) {
-      var qs = keyValues.join("&");
-      url += url.match(/\?[a-z]/i) ? qs : ("?" + qs);
+    let matches = this.source.match(/:[a-zA-Z_]+/);
+    if (matches === null) {
+      throw "Replacement word is missing.";
     }
+
+    let replacementWord = matches[0];
+    let url = this.source.replace(replacementWord, keyword);
 
     return this.http.get(url)
       .map(resp => resp.json())
       .map(resp => {
-        var list = resp.data || resp;
+        let list = resp.data || resp;
 
         if (this.pathToData) {
-          var paths = this.pathToData.split(".");
+          let paths = this.pathToData.split(".");
           paths.forEach(prop => list = list[prop]);
         }
 

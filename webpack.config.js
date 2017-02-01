@@ -1,14 +1,15 @@
 var path = require('path');
 var webpack = require('webpack');
 
-console.log(path.join(__dirname, 'src', 'index.ts'));
-
 module.exports = {
   entry: {
     'ng2-auto-complete': path.join(__dirname, 'src', 'index.ts')
   },
   resolve: {
     extensions: ['', '.ts', '.js', '.json', '.css', '.html']
+  },
+  resolveLoader: {
+    root: path.join(__dirname, 'node_modules')
   },
   output: {
     path: path.join(__dirname, 'dist'),

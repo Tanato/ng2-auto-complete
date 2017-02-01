@@ -1,5 +1,4 @@
-import { ElementRef, OnInit } from "@angular/core";
-import { Subject } from "rxjs/Subject";
+import { ElementRef, OnInit, EventEmitter } from "@angular/core";
 import { Ng2AutoComplete } from "./ng2-auto-complete";
 /**
  * show a selected date in monthly calendar
@@ -20,17 +19,21 @@ export declare class Ng2AutoCompleteComponent implements OnInit {
     displayPropertyName: string;
     placeholder: string;
     blankOptionText: string;
+    noMatchFoundText: string;
+    acceptUserInput: boolean;
+    loadingText: string;
+    maxNumList: number;
+    showInputTag: boolean;
+    valueSelected: EventEmitter<{}>;
+    inputChanged: EventEmitter<{}>;
+    autoCompleteInput: ElementRef;
     el: HTMLElement;
-    inputEl: HTMLInputElement;
-    userInputEl: Element;
-    userInputElTabIndex: any;
-    closeToBottom: boolean;
     dropdownVisible: boolean;
     isLoading: boolean;
     filteredList: any[];
+    minCharsEntered: boolean;
     itemIndex: number;
     keyword: string;
-    valueSelected: Subject<any>;
     isSrcArr(): boolean;
     /**
      * constructor
@@ -40,13 +43,14 @@ export declare class Ng2AutoCompleteComponent implements OnInit {
      * user enters into input el, shows list to select, then select one
      */
     ngOnInit(): void;
-    reloadListInDelay(): void;
-    showDropdownList(): void;
+    reloadListInDelay: (evt: any) => void;
+    showDropdownList(event: any): void;
     hideDropdownList(): void;
-    reloadList(): void;
+    reloadList(keyword: string): void;
     selectOne(data: any): void;
-    inputElKeyHandler(evt: any): void;
+    inputElKeyHandler: (evt: any) => void;
     getFormattedList(data: any): string;
+    readonly emptyList: boolean;
     private defaultListFormatter(data);
     private delay;
 }
